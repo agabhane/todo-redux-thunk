@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AddTodo from './AddTodo';
 import Checkbox from './Checkbox';
@@ -15,7 +15,12 @@ function todoSelector(todos, showCompleted) {
 export default function Todo() {
   const dispatch = useDispatch();
   const [showCompleted, setShowCompleted] = useState(false);
-  const todos = useSelector(({ todo }) => todoSelector(todo, showCompleted));
+  const todos = useSelector(
+    useCallback(
+      ({ todo }) => todoSelector(todo, showCompleted),
+      [showCompleted]
+    )
+  );
 
   console.log(todos);
   useEffect(() => {
@@ -31,29 +36,29 @@ export default function Todo() {
   };
 
   return (
-    <div>
-      <h3>My Todos</h3>
+    <div className="w-1/2 mx-auto mt-10 border p-4 shadow-md bg-white rounded">
+      <h3 className="text-lg text-center">My Todos</h3>
       <AddTodo onAdd={_addTodo} />
-      <hr />
+
       <div>
-        <label>
+        <label className="text-sm flex justify-end items-center">
+          <span className="mr-1">Show Completed</span>
           <input
             type="checkbox"
             checked={showCompleted}
             onChange={(e) => setShowCompleted(e.target.checked)}
           />
-          Show Completed
         </label>
       </div>
-      <hr />
+
       {todos.map((todo) => {
         return (
-          <div style={{ display: 'flex' }} key={todo.id}>
+          <div className="flex items-start text-sm py-1 space-x-1" key={todo.id}>
             <Checkbox
               checked={todo.completed}
               onChange={(checked) => onCheckboxValueChanges(todo.id, checked)}
             />
-            <div>{todo.summary}</div>
+            <div className={todo.completed ? 'line-through text-gray-500' : ''}>{todo.summary}</div>
           </div>
         );
       })}

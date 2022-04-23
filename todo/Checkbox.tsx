@@ -5,6 +5,6 @@ export default function Checkbox({ checked, onChange }) {
     onChange(e.target.checked);
   };
   return (
-    <input type="checkbox" checked={checked} onChange={onChangeCheckbox} />
+    <input type="checkbox" checked={checked} onChange={onChangeCheckbox} className="translate-y-1" />
   );
 }
