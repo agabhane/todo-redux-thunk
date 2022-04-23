@@ -21,6 +21,7 @@ export const addTodo = (summary: string) => {
     const newTodo = {
       id: Date.now().valueOf().toString(),
       summary,
+      completed: false,
     };
     todos.push(newTodo);
     localStorage.setItem('todos', JSON.stringify(todos));
@@ -32,12 +33,21 @@ export const addTodo = (summary: string) => {
 };
 
 export const markToDo = (id, completed) => {
-  return {
-    type: MARK_COMPLETE,
-    payload: {
-      id,
+  return async (dispatch, getState) => {
+    const todos = getState().todo;
+    const index = todos.findIndex((t) => t.id === id);
+    todos[index] = {
+      ...todos[index],
       completed,
-    },
+    };
+    localStorage.setItem('todos', JSON.stringify(todos));
+    dispatch({
+      type: MARK_COMPLETE,
+      payload: {
+        id,
+        completed,
+      },
+    });
   };
 };
 
@@ -52,7 +62,8 @@ export const toDoReducer = (state = [], { type, payload }) => {
         const index = draft.findIndex((todo) => todo.id === payload.id);
         draft[index].completed = payload.completed;
       });
-      return todos;
+
+      return [...todos];
     default:
       return state;
   }
